@@ -1,10 +1,11 @@
 import React, { useState, useContext } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Login, AccountRecovery, DashboardAdmin, Dashboard, DeliveredFormsAdmin, OrderFormsPage, AboutKPIsAdmin, ReportsAdmin, ProfileAdmin, ResellersAdmin, ApprovalsAdmin, OrderFormsAdmin, ResignAdmin, AboutKPIs, MyRatings, DeliveredForms, ProfileReseller, FurnitureReseller } from './pages';
-import { AdminRoute, OrderForms, ResellerRoute } from './components';
+import { Login, AccountRecovery, DashboardAdmin, Dashboard, DeliveredFormsAdmin, OrderFormsPage, AboutKPIsAdmin, ReportsAdmin, ProfileAdmin, ResellersAdmin, ApprovalsAdmin, OrderFormsAdmin, ResignAdmin, AboutKPIs, MyRatings, DeliveredForms, ProfileReseller, FurnitureReseller, Transactions, Summary, Placement } from './pages';
+import { AdminRoute, OrderForms, OrderInfo, ResellerRoute } from './components';
 import { Perftracker } from './Perftracker';
 import ProtectedRoutes from './components/ProtectedRoutes';
 import CartReseller from './pages/reseller/CartReseller';
+import OrderStatusPage from './pages/reseller/OrderStatusPage';
 
 function App() {
   const { state, dispatch: ctxDispatch } = useContext(Perftracker);
@@ -39,7 +40,10 @@ function App() {
           <Route path="/reseller/furnituresets/:slug" element={<ProtectedRoutes><FurnitureReseller /></ProtectedRoutes>} />
           <Route path="/reseller/furnituresets" element={<ProtectedRoutes><FurnitureReseller /></ProtectedRoutes>} />
           <Route path="/reseller/cart" element={<ProtectedRoutes><CartReseller /></ProtectedRoutes>} />
-          <Route path="/reseller/orderforms" element={<OrderFormsPage />} />
+          <Route path="/reseller/orderstatus" element={<OrderStatusPage/>} />
+          <Route path="/reseller/transactions" element={<Transactions />} />
+          <Route path="/reseller/summary" element={<Summary />} />
+          <Route path="/reseller/placement/:id" element={<Placement />} />
           <Route path="/reseller/deliveredforms" element={<DeliveredForms />} />
           <Route path="/reseller/aboutKPIs" element={<AboutKPIs />} />
           {/* ... other authenticated routes ... */}

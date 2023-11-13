@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { AiOutlineMenu } from 'react-icons/ai';
 import { FiShoppingCart } from 'react-icons/fi';
 import { BsChatLeft } from 'react-icons/bs';
@@ -9,6 +9,7 @@ import { TooltipComponent } from '@syncfusion/ej2-react-popups';
 import avatar from '../data/avatar.jpg';
 import { Cart, Chat, Notifications, UserProfile } from '.';
 import { useStateContext } from '../contexts/ContextProvider';
+import { Perftracker } from '../Perftracker';
 
 const NavButton = ({ title, customFunc, icon, color, dotColor }) => (
   <TooltipComponent content={title} position="BottomCenter">
@@ -28,7 +29,15 @@ const NavButton = ({ title, customFunc, icon, color, dotColor }) => (
 );
 
 const Navbar = () => {
+
+
+
   const { currentColor, activeMenu, setActiveMenu, handleClick, isClicked, setScreenSize, screenSize } = useStateContext();
+
+  const { state } = useContext(Perftracker);
+  const { userInfo } = state;
+  const name = userInfo?.name || 'Guest';
+
 
   useEffect(() => {
     const handleResize = () => setScreenSize(window.innerWidth);
@@ -72,7 +81,7 @@ const Navbar = () => {
             <p>
               <span className="text-gray-400 text-14">Hi,</span>{' '}
               <span className="text-gray-400 font-bold ml-1 text-14">
-                Michael
+                {name}
               </span>
             </p>
             <MdKeyboardArrowDown className="text-gray-400 text-14" />

@@ -21,7 +21,7 @@ function FurnitureSets(setProps) {
         const quantity = existItem ? existItem.quantity + 1 : 1;
         ctxDispatch({
             type: 'CART_ADD_ITEM',
-            payload: { ...item, quantity },
+            payload: { ...item, quantity, selectedDescription, selectedDescriptionValue },
         });
     };
 

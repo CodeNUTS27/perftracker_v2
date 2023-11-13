@@ -19,6 +19,7 @@ export { default as ResignAdmin } from './admin/ResignAdmin';
 
 // users
 export { default as Dashboard } from './reseller/Dashboard';
+export { default as Summary } from './reseller/Summary';
 export { default as ProfileReseller } from './reseller/ProfileReseller';
 export { default as CartReseller } from './reseller/CartReseller';
 export { default as FurnitureReseller } from './reseller/FurnitureReseller';
@@ -27,7 +28,8 @@ export { default as OrderFormsPage } from './reseller/OrderFormsPage';
 export { default as AboutKPIs } from './reseller/AboutKPIs';
 export { default as DeliveredForms } from './reseller/DeliveredForms';
 export { default as DashboardReseller } from './reseller/DashboardReseller';
-
+export { default as Transactions } from './reseller/Transactions';
+export { default as Placement } from './reseller/Placement';
 
 //app
 

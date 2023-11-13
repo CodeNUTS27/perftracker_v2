@@ -1,7 +1,7 @@
 import React from 'react';
 import { AiOutlineCalendar, AiOutlineShoppingCart, AiOutlineHome, AiFillStar } from 'react-icons/ai';
 import { FiShoppingBag, FiEdit, FiBarChart, FiCreditCard, FiStar, FiShoppingCart } from 'react-icons/fi';
-import { BsKanban, BsBoxSeam, BsCurrencyDollar, BsShield, BsChatLeft, BsFillInfoCircleFill } from 'react-icons/bs';
+import { BsKanban, BsBoxSeam, BsCurrencyDollar, BsShield, BsChatLeft, BsFillInfoCircleFill, BsFillClipboard2CheckFill } from 'react-icons/bs';
 import { HiOutlineRefresh } from 'react-icons/hi';
 import { TiTick } from 'react-icons/ti';
 import { GiStarsStack, GiStairsGoal, GiWoodenChair } from 'react-icons/gi';
@@ -12,7 +12,7 @@ import { BiMessageCheck, BiColorFill, BiSolidDashboard, BiCart } from 'react-ico
 import { FaExchangeAlt } from 'react-icons/fa';
 import { DiGoogleAnalytics } from 'react-icons/di';
 import { TbDoorExit, TbReport } from 'react-icons/tb';
-import { MdBarChart, MdOutlineSupervisorAccount } from 'react-icons/md';
+import { MdBarChart, MdOutlineSupervisorAccount, MdPayment } from 'react-icons/md';
 import { FaCoins } from 'react-icons/fa';
 
 import avatar from './avatar.jpg';
@@ -551,12 +551,12 @@ export const links = [
         icon: <FaShoppingCart />,
       },
       {
-        name: 'order forms',
-        icon: <FiEdit />,
+        name: 'transactions',
+        icon: <MdPayment />,
       },
       {
-        name: 'delivered forms',
-        icon: <FaPaperPlane/>,
+        name: 'order status',
+        icon: <BsFillClipboard2CheckFill />,
       },
       {
         name: 'about KPIs',

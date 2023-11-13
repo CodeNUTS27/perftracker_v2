@@ -1,13 +1,31 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { MdOutlineCancel } from 'react-icons/md';
 
 import { Button } from '.';
 import { userProfileData } from '../data/dummy';
 import { useStateContext } from '../contexts/ContextProvider';
 import avatar from '../data/avatar.jpg';
+import { Perftracker } from '../Perftracker';
 
 const UserProfile = () => {
   const { currentColor } = useStateContext();
+
+  const { state, dispatch: ctxDispatch } = useContext(Perftracker);
+  const { userInfo } = state;
+
+
+
+  const name = userInfo?.name || 'Guest';
+  const isReseller = userInfo?.isReseller;
+  const isAdmin = userInfo?.isAdmin;
+  const email = userInfo?.email;
+
+  const signoutHandler = () => {
+    console.log('Signout handler called');
+    ctxDispatch({ type: 'USER_SIGNOUT' });
+    localStorage.removeItem('userInfo');
+    window.location.href = '/';
+  };
 
   return (
     <div className="nav-item absolute right-1 top-16 bg-white dark:bg-[#42464D] p-8 rounded-lg w-96">
@@ -28,15 +46,20 @@ const UserProfile = () => {
           alt="user-profile"
         />
         <div>
-          <p className="font-semibold text-xl dark:text-gray-200"> Michael Roberts </p>
-          <p className="text-gray-500 text-sm dark:text-gray-400">  User   </p>
-          <p className="text-gray-500 text-sm font-semibold dark:text-gray-400"> michaelroberts@gmail.com </p>
+          <p className="font-semibold text-xl dark:text-gray-200"> {name} </p>
+          {isReseller && (
+            <p className="text-gray-500 text-sm dark:text-gray-400">Reseller</p>
+          )}
+          {isAdmin && (
+            <p className="text-gray-500 text-sm dark:text-gray-400">Admin</p>
+          )}
+          <p className="text-gray-500 text-sm font-semibold dark:text-gray-400"> {email} </p>
         </div>
       </div>
       <div>
         {userProfileData.map((item, index) => (
           <div key={index} className="flex gap-5 border-b-1 border-color p-4 hover:bg-light-gray cursor-pointer  dark:hover:bg-[#42464D]">
-            <button 
+            <button
               type="button"
               style={{ color: item.iconColor, backgroundColor: item.iconBg }}
               className=" text-xl rounded-lg p-3 hover:bg-light-gray"
@@ -58,6 +81,8 @@ const UserProfile = () => {
           text="Logout"
           borderRadius="10px"
           width="full"
+          onClick={signoutHandler} // Call the signoutHandler on click
+          isLogout={true}
         />
       </div>
     </div>

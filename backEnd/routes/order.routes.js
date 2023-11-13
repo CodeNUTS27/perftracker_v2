@@ -3,14 +3,16 @@ import expressAsyncHandler from 'express-async-handler';
 import Order from '../models/order.model.js';
 import User from '../models/user.model.js';
 import Product from '../models/product.model.js';
-import { isAuth, isAdmin, isReseller,  } from '../utils.js';
+import { isAuth, isAdmin, isReseller, } from '../utils.js';
 
 
 
 const orderRouter = express.Router();
 
+const asyncHandler = expressAsyncHandler;
+
 orderRouter.get(
-  '/',
+  '/',  
   isAuth,
   expressAsyncHandler(async (req, res) => {
     const orders = await Order.find().populate('user', 'name');
@@ -19,20 +21,49 @@ orderRouter.get(
   })
 );
 
+orderRouter.get(
+  '/mine',
+  isAuth,
+  expressAsyncHandler(async (req, res) => {
+    const orders = await Order.find({ user: req.user._id });
+    res.send(orders);
+  })
+);
 
+
+
+// POST /api/orders
 orderRouter.post(
   '/',
   isAuth,
-  expressAsyncHandler(async (req, res) => {
+  asyncHandler(async (req, res) => {
+    const {
+      orderItems,
+      customerName,
+      customerAddress,
+      contactNumber,
+      itemsPrice,
+      markup,
+      deliveryFee,
+      discount,
+      total,
+    } = req.body;
+
+
+
+    // Calculate the total based on orderItems and other values
+    const calculatedTotal = itemsPrice + markup + deliveryFee - discount;
+
     const newOrder = new Order({
-      orderItems: req.body.orderItems.map((x) => ({ ...x, product: x._id })),
-      shippingAddress: req.body.shippingAddress,
-      paymentMethod: req.body.paymentMethod,
-      itemsPrice: req.body.itemsPrice,
-      shippingPrice: req.body.shippingPrice,
-      taxPrice: req.body.taxPrice,
-      totalPrice: req.body.totalPrice,
-      user: req.user._id,
+      orderItems: orderItems.map(item => ({ ...item, price: item.selectedDescriptionValue })),
+      customerName,
+      customerAddress,
+      contactNumber,
+      itemsPrice,
+      markup,
+      deliveryFee,
+      discount,
+      total: calculatedTotal,
     });
 
     const order = await newOrder.save();
@@ -40,52 +71,52 @@ orderRouter.post(
   })
 );
 
-orderRouter.get( '/summary', isAuth, isAdmin, expressAsyncHandler(async (req, res) => {
-    const orders = await Order.aggregate([
-      {
-        $group: {
-          _id: null,
-          numOrders: { $sum: 1 },
-          totalSales: { $sum: '$totalPrice' },
-        },
+orderRouter.get('/summary', isAuth, isAdmin, expressAsyncHandler(async (req, res) => {
+  const orders = await Order.aggregate([
+    {
+      $group: {
+        _id: null,
+        numOrders: { $sum: 1 },
+        totalSales: { $sum: '$totalPrice' },
       },
-    ]);
-    const users = await User.aggregate([
-      {
-        $group: {
-          _id: null,
-          numUsers: { $sum: 1 },
-        }
+    },
+  ]);
+  const users = await User.aggregate([
+    {
+      $group: {
+        _id: null,
+        numUsers: { $sum: 1 },
       }
-    ]);
-    const dailyOrders = await Order.aggregate([
-      {
-        $group: {
-          _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
-          orders: { $sum: 1 },
-          sales: { $sum: '$totalPrice' },
-        },
+    }
+  ]);
+  const dailyOrders = await Order.aggregate([
+    {
+      $group: {
+        _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+        orders: { $sum: 1 },
+        sales: { $sum: '$totalPrice' },
       },
-      { $sort: { _id: 1 } },
-    ]);
-    const productCategories = await Product.aggregate([
-      {
-        $group: {
-          _id: '$category',
-          count: { $sum: 1 },
-        },
+    },
+    { $sort: { _id: 1 } },
+  ]);
+  const productCategories = await Product.aggregate([
+    {
+      $group: {
+        _id: '$category',
+        count: { $sum: 1 },
       },
-    ]);
-    res.send({ users, orders, dailyOrders, productCategories });
-    console.log(users, orders, dailyOrders, productCategories);
-  })
+    },
+  ]);
+  res.send({ users, orders, dailyOrders, productCategories });
+  console.log(users, orders, dailyOrders, productCategories);
+})
 );
 
 orderRouter.get(
-  '/mine',
+  '/:orderId',
   isAuth,
   expressAsyncHandler(async (req, res) => {
-    const orders = await Order.find({ user: req.user._id });
+    const orders = await Order.findById(req.params.orderId)
     res.send(orders);
     console.log(orders)
   })
@@ -121,77 +152,77 @@ orderRouter.get(
 //   })
 // );
 
-orderRouter.get(
-    '/:id',
-    isAuth,
-    expressAsyncHandler(async (req, res) => {
-      const order = await Order.findById(req.params.id)
-      .populate(
-        'user',
-        'email name'
-      );
-      if (order) {
-        mailgun1()
-        .messages()
-        .send(
-          {
-            from: 'CBC <cbc@company.capstone.com>',
-            to: `${order.user.name} <${order.user.email}>`,
-            subject: `New order ${order._id}`,
-            html: payOrderEmailTemplate1(order),
-          },
-          (error, body) => {
-            if (error) {
-              console.log(error);
-            } else {
-              console.log(body);
-            }
-          }
-        );
-        res.send(order);
-      } else {
-        res.status(404).send({ message: 'Order Not Found' });
-      }
-    })
-  );
-  
-  // orderRouter.put(
-  //   '/updateInventory/:id',
-  //   isAuth,
-  //   expressAsyncHandler(async (req, res) => {
-  //     const itemId = req.params.id;
-  //     const { name, category, quantity } = req.body;
-  
-  //     const inventoryItem = await InventoryItem.findById(itemId);
-  
-  //     if (inventoryItem) {
-  //       inventoryItem.name = name;
-  //       inventoryItem.category = category;
-  //       inventoryItem.quantity = quantity;
-  
-  //       const updatedInventoryItem = await inventoryItem.save();
-  
-  //       res.send(updatedInventoryItem);
-  //     } else {
-  //       res.status(404).send({ message: 'Inventory Item Not Found' });
-  //     }
-  //   })
-  // );
+// orderRouter.get(
+//     '/:orderId',
+//     isAuth,
+//     expressAsyncHandler(async (req, res) => {
+//       const order = await Order.findById(req.params.orderId)
+//       .populate(
+//         'user',
+//         'email name'
+//       );
+//       if (order) {
+//         mailgun1()
+//         .messages()
+//         .send(
+//           {
+//             from: 'CBC <cbc@company.capstone.com>',
+//             to: `${order.user.name} <${order.user.email}>`,
+//             subject: `New order ${order._id}`,
+//             html: payOrderEmailTemplate1(order),
+//           },
+//           (error, body) => {
+//             if (error) {
+//               console.log(error);
+//             } else {
+//               console.log(body);
+//             }
+//           }
+//         );
+//         res.send(order);
+//       } else {
+//         res.status(404).send({ message: 'Order Not Found' });
+//       }
+//     })
+//   );
+
+// orderRouter.put(
+//   '/updateInventory/:id',
+//   isAuth,
+//   expressAsyncHandler(async (req, res) => {
+//     const itemId = req.params.id;
+//     const { name, category, quantity } = req.body;
+
+//     const inventoryItem = await InventoryItem.findById(itemId);
+
+//     if (inventoryItem) {
+//       inventoryItem.name = name;
+//       inventoryItem.category = category;
+//       inventoryItem.quantity = quantity;
+
+//       const updatedInventoryItem = await inventoryItem.save();
+
+//       res.send(updatedInventoryItem);
+//     } else {
+//       res.status(404).send({ message: 'Inventory Item Not Found' });
+//     }
+//   })
+// );
 
 orderRouter.put(
-    '/:id/deliver',
-    isAuth,
-    expressAsyncHandler(async (req, res) => {
-      const order = await Order.findById(req.params.id);
-      if (order) {
-        order.isDelivered = true;
-        order.deliveredAt = Date.now();
-        await order.save();
-        res.send({ message: 'Order Delivered' });
-      } else {
-        res.status(404).send({ message: 'Order Not Found' });
-      }
-    })
+  '/:id/deliver',
+  isAuth,
+  expressAsyncHandler(async (req, res) => {
+    const order = await Order.findById(req.params.id);
+    if (order) {
+      order.isDelivered = true;
+      order.deliveredAt = Date.now();
+      await order.save();
+      res.send({ message: 'Order Delivered' });
+    } else {
+      res.status(404).send({ message: 'Order Not Found' });
+    }
+  })
 );
 
 
@@ -217,11 +248,11 @@ orderRouter.put(
   isAuth,
   expressAsyncHandler(async (req, res) => {
     const order = await Order.findById(req.params.id)
-    .populate(
-      'user',
-      'email name'
-    );
-    if(order) {
+      .populate(
+        'user',
+        'email name'
+      );
+    if (order) {
       order.isPaid = true;
       order.paidAt = Date.now();
       order.paymentResult = {

@@ -220,11 +220,11 @@ const Login = () => {
                   </div>
 
                   <div className="heading">
-                    <h2 className="mt-6 text-center ">Start your journey as Reseller!</h2>
+                    <h2 className="mt-6 mb-6 text-center ">Start your journey as Reseller!</h2>
                   </div>
 
 
-                  <form onSubmit={handleSignUp}>
+                  <form onSubmit={handleSignUp} className="sign-up-form w-full mx-auto flex flex-col col-span-1 row-span-1 transition-opacity duration-20 delay-400">
 
                     {/*TEXTBOX NAME */}
                     <div className="relative w-full h-12 mt-2">
@@ -242,7 +242,7 @@ const Login = () => {
                     </div>
 
                     {/*TEXTBOX EMAIL */}
-                    <div className="relative w-full h-12 my-2">
+                    <div className="relative w-full h-12 mt-2">
                       <input
                         id="email-signup"
                         type="email"
@@ -258,7 +258,7 @@ const Login = () => {
 
 
                     {/*TEXTBOX PASSWORD */}
-                    <div className="input-wrap">
+                    <div className="relative w-full h-12 mt-2">
                       <input
                         id="password-signup"
                         type="password"
@@ -274,7 +274,7 @@ const Login = () => {
                     </div>
 
                     {/*TEXTBOX CONFIRM PASSWORD */}
-                    <div className="input-wrap">
+                    <div className="relative w-full h-12 mt-2">
                       <input
                         id="confirm-password-signup"
                         type="password"
@@ -291,20 +291,13 @@ const Login = () => {
                     <button type="submit" className="sign-btn" >Sign Up</button>
 
                   </form>
-
                 </div>
-
-
-
-
               </div>
-
-
 
             ) : (
 
               //login
-              <form onSubmit={handleLogin} className="sign-in-form mt-[4rem] justify-center item-center self-center" >
+              <form onSubmit={handleLogin} className="sign-in-form mt-[4rem] justify-center item-center self-center max-w-[260px] w-full mx-auto h-full flex flex-col col-span-1 row-span-1 transition-opacity duration-20 delay-400" >
                 <div className="logo">
                   <p className="logo-title">PerfTracker</p>
                 </div>

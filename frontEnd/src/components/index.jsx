@@ -55,9 +55,14 @@ export { default as DeliveredFormsComponent } from './DeliveredFormsComponent.js
 export { default as AboutKPIsAdminComponent } from './AboutKPIsAdminComponent.jsx';
 export { default as ReportsAdminComponent } from './ReportsAdminComponent';
 
+export { default as TransactionComponent } from './TransactionComponent';
+export { default as CheckoutSteps } from './CheckoutSteps';
 export { default as FeatureCard } from './FeatureCard';
 export { default as NavLinks } from './NavLinks';
 export { default as LoadingBox } from './LoadingBox';
+export { default as OrderInfo } from './OrderInfo';
+export { default as OrderStatus } from './OrderStatus';
+export { default as PlacementComponent } from './PlacementComponent';
 
 export { default as AdminRoute } from './AdminRoute';
 export { default as ResellerRoute } from './ResellerRoute';
